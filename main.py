@@ -16,6 +16,7 @@ import statistics
 
 A, B, C, D, E = 1000, 500, 250, 100, 50  # esto nos da en total $250K
 TOTAL_COMBINACIONES_POSIBLES = A * B * C * D * E
+PROBABILIDAD_MUTACION = 50
 
 
 # Xa: cantidad de billetes de 50 utilizados; Xa <= A
@@ -48,7 +49,7 @@ def generar_poblacion_inicial(monto_a_retirar):
     cantidad_poblacion_inicial = combinaciones_posibles
 
     if combinaciones_posibles > 1000000:
-        cantidad_poblacion_inicial = 750000
+        cantidad_poblacion_inicial = 500000
 
     poblacion_inicial = []
     print("combinaciones posibles:", combinaciones_posibles)
@@ -104,44 +105,81 @@ def seleccion(inds, a_retirar):
     return inds
 
 
-# iteramos los seleccionados y hacemos cruza entre i e i+1, podriamos hacer un shuffle antes para hacer un cruzamiento mas random?
-def cruzamiento(inds):
-    probabilidad_de_cruzamiento = random.randint(1, 100)
-
-    if probabilidad_de_cruzamiento > 70:
-        resultado = []
-        for k in range(0, len(inds) - 2):
-            resultado.append(cruzar(inds[k], inds[k + 1]))
-        return resultado
+def mejor_individuo(individuo1, individuo2, montoARetirar):
+    apt1 = calcular_aptitud(individuo1, montoARetirar)
+    apt2 = calcular_aptitud(individuo2, montoARetirar)
+    if apt1 > apt2:
+        individuo = {
+            'billetes': obtener_billetes(individuo1),
+            'aptitud': apt1
+        }
     else:
-        return inds
-
-
-# cruza simple. Los primeros 3 los tomamos de B, y los ultimos 2 de A.
-def cruzar(ind_a, ind_b):
-    billetes_a = obtener_billetes(ind_a)
-    billetes_b = obtener_billetes(ind_b)
-    return {
-        'billetes': (billetes_b[0], billetes_b[1], billetes_b[2], billetes_a[3], billetes_a[4]),
-        'aptitud': 0
-    }
-
-
-def mutar(individuo):
-    probabilidad_de_mutacion = random.randint(1, 100)
-    if probabilidad_de_mutacion > 90:
-        a, b, c, d, e = obtener_billetes(individuo)
-        return {
-            'billetes': (a, b, c, d, e),
-            'aptitud': obtener_aptitud(individuo)
+        individuo = {
+            'billetes': obtener_billetes(individuo2),
+            'aptitud': apt2
         }
     return individuo
 
 
-def mutacion(inds):
+def torneo(inds, monto_a_retirar):
+    resultado = []
+    for i in range(0, len(inds)):
+        if i == len(inds) - 1:
+            individuo = mejor_individuo(inds[i], inds[0],
+                                        monto_a_retirar)  # el ultimo juega contra el primero y el anteultimo
+        else:
+            individuo = mejor_individuo(inds[i], inds[i + 1], monto_a_retirar)
+        resultado.append(individuo)
+    return resultado
+
+
+# iteramos los seleccionados y hacemos cruza entre i e i+1, podriamos hacer un shuffle antes para hacer un cruzamiento mas random?
+def cruzamiento(inds, monto_a_retirar):
+    resultado = []
+
+    for i in range(0, len(inds) - 1, 2):
+        resultado.append(cruzar(inds[i], inds[i + 1], monto_a_retirar))
+        resultado.append(cruzar(inds[i + 1], inds[i], monto_a_retirar))
+    return resultado
+
+
+# cruza simple. Los primeros 3 los tomamos de B, y los ultimos 2 de A.
+# cruza simple. Los primeros 3 los tomamos de B, y los ultimos 2 de A.
+def cruzar(indA, indB, monto_a_retirar):
+    billetesA = obtener_billetes(indA)
+    billetesB = obtener_billetes(indB)
+    # return (obtener_billetes(indB[0]), indB[1], indB[2], indA[3], indA[4])
+    return {
+        'billetes': (billetesB[0], billetesB[1], billetesB[2], billetesA[3], billetesA[4])
+    }
+
+
+def mutar(inds):
+    x = random.randint(0, len(inds) - 1)
+    individuo = inds[x]
+    pos = random.randint(0, len(individuo) - 1)
+    billetes = list(obtener_billetes(individuo))
+    billetes[pos] += 1  # ver de agregar -1 tmb
+    individuo_mutado = {
+        'billetes': tuple(billetes),
+    }
+    inds[x] = individuo_mutado
+    return inds
+
+
+# se activa siempre y se ejecuta dependiendo de una probabilidad
+def ejecuta_mutacion():
+    x = random.randint(0, 100);
+    return x <= PROBABILIDAD_MUTACION
+
+
+def mutacion(individuos):
     mutados = []
-    for i in range(len(inds)):
-        mutados.append(mutar(inds[i]))
+    if ejecuta_mutacion():
+        print("Muto")
+        mutados = mutar(individuos)
+    else:
+        mutados = individuos
     return mutados
 
 
@@ -168,24 +206,25 @@ file = open('vuelta_mejor_aptitud.txt', 'w')
 
 while i < cantidad_de_vueltas:
     print("ejecutando Vuelta", i)
-    seleccionados = seleccion(individuos, montoARetirar)
-    if len(seleccionados) <= 1:  # condicion de corte
-        print("queda 1 solo individuo. fin.")
-        break
+    # seleccionados = seleccion(individuos, montoARetirar)
 
+    print("poblacion antes del torneo", len(individuos))
+    seleccionados = torneo(individuos, montoARetirar)
+    seleccionados.sort(key=obtener_aptitud, reverse=True)
     file.write(str(i) + "," + str(obtener_aptitud(seleccionados[0])) + '\n')
-    # graph.agregar_punto(i,obtener_aptitud(seleccionados[0]))
-    # graph.actualizar()
-    individuosCruzados = cruzamiento(seleccionados)
+
+    individuosCruzados = cruzamiento(seleccionados, montoARetirar)
     individuosMutados = mutacion(individuosCruzados)
     individuos = individuosMutados
     i += 1
 
 print("fin de los ciclos, se ejecutaron " + str(i) + " vueltas.")
-individuos.sort(key=obtener_aptitud, reverse=True)  # ordenamos de mejor a peor
-print(individuos[0])
-a, b, c, d, e = obtener_billetes(individuos[0])
-valor = a * 50 + b * 100 + c * 200 + d * 500 + e * 1000
-print("el individuo restante cumple el valor:" + str(valor == montoARetirar))
+
+
+#individuos.sort(key=obtener_aptitud, reverse=True)  # ordenamos de mejor a peor
+#print(individuos[0])
+#a, b, c, d, e = obtener_billetes(individuos[0])
+#valor = a * 50 + b * 100 + c * 200 + d * 500 + e * 1000
+#print("el individuo restante cumple el valor:" + str(valor == montoARetirar))
 
 file.close()
