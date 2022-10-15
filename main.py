@@ -4,6 +4,8 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
+# import graph
+
 # A: Cantidad de billetes de 50 disponibles
 # B: Cantidad de billetes de 100 disponibles
 # C: Cantidad de billetes de 200 disponibles
@@ -42,11 +44,10 @@ def generar_poblacion_inicial(monto_a_retirar):
 
     # el 100 lo agregue para una poblacion mas variada
     combinaciones_posibles = todo_50 * todo_100 * todo_200 * todo_500 * todo_1000
+    cantidad_poblacion_inicial = combinaciones_posibles
 
     if combinaciones_posibles > 1000000:
-        cantidad_poblacion_inicial = 100000
-    else:
-        cantidad_poblacion_inicial = 10000
+        cantidad_poblacion_inicial = 500000
 
     poblacion_inicial = []
     print("combinaciones posibles:", combinaciones_posibles)
@@ -160,20 +161,27 @@ def es_apto(individuo):
 montoARetirar = 7350
 individuos = generar_poblacion_inicial(montoARetirar)
 cantidad_de_vueltas = 10000
-i = 0
+i = 1
+
+file = open('vuelta_aptitud.txt', 'w')
 
 while i < cantidad_de_vueltas:
     print("ejecutando Vuelta", i)
     seleccionados = seleccion(individuos, montoARetirar)
-    if len(seleccionados) <= 1: # condicion de corte
+    if len(seleccionados) <= 1:  # condicion de corte
         print("se filtró toda la poblacion, finalizando ejecucion.")
         break
 
+    file.write(str(i) + "," + str(obtener_aptitud(seleccionados[0]))+'\n')
+    # graph.agregar_punto(i,obtener_aptitud(seleccionados[0]))
+    # graph.actualizar()
     individuosCruzados = cruzamiento(seleccionados)
     individuosMutados = mutacion(individuosCruzados)
     individuos = individuosMutados
     i += 1
 
-print("sali del while")
+print("fin de los vueltas, se ejecutaron"+str(i) + " vueltas.")
 individuos.sort(key=obtener_aptitud, reverse=True)  # ordenamos de mejor a peor
 print(individuos[0])
+
+file.close()
