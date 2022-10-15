@@ -14,7 +14,7 @@ ys = []
 
 def animate(i):
 
-    graph_data = open('vuelta_aptitud.txt','r').read()
+    graph_data = open('vuelta_mejor_aptitud.txt', 'r').read()
     lines = graph_data.split('\n')
     xs = []
     ys = []
@@ -24,7 +24,7 @@ def animate(i):
             xs.append(float(x))
             ys.append(float(y))
     ax1.clear()
-    plt.title('Evolucion')
+    plt.title('Evolucion de la Aptitud')
     plt.xlabel("Vuelta")
     plt.ylabel("Mejor Aptitud")
     ax1.plot(xs, ys)

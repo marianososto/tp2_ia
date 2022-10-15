@@ -3,6 +3,7 @@ import math
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import statistics
 
 # import graph
 
@@ -47,7 +48,7 @@ def generar_poblacion_inicial(monto_a_retirar):
     cantidad_poblacion_inicial = combinaciones_posibles
 
     if combinaciones_posibles > 1000000:
-        cantidad_poblacion_inicial = 500000
+        cantidad_poblacion_inicial = 750000
 
     poblacion_inicial = []
     print("combinaciones posibles:", combinaciones_posibles)
@@ -163,16 +164,16 @@ individuos = generar_poblacion_inicial(montoARetirar)
 cantidad_de_vueltas = 10000
 i = 1
 
-file = open('vuelta_aptitud.txt', 'w')
+file = open('vuelta_mejor_aptitud.txt', 'w')
 
 while i < cantidad_de_vueltas:
     print("ejecutando Vuelta", i)
     seleccionados = seleccion(individuos, montoARetirar)
     if len(seleccionados) <= 1:  # condicion de corte
-        print("se filtró toda la poblacion, finalizando ejecucion.")
+        print("queda 1 solo individuo. fin.")
         break
 
-    file.write(str(i) + "," + str(obtener_aptitud(seleccionados[0]))+'\n')
+    file.write(str(i) + "," + str(obtener_aptitud(seleccionados[0])) + '\n')
     # graph.agregar_punto(i,obtener_aptitud(seleccionados[0]))
     # graph.actualizar()
     individuosCruzados = cruzamiento(seleccionados)
@@ -180,8 +181,11 @@ while i < cantidad_de_vueltas:
     individuos = individuosMutados
     i += 1
 
-print("fin de los vueltas, se ejecutaron"+str(i) + " vueltas.")
+print("fin de los ciclos, se ejecutaron " + str(i) + " vueltas.")
 individuos.sort(key=obtener_aptitud, reverse=True)  # ordenamos de mejor a peor
 print(individuos[0])
+a, b, c, d, e = obtener_billetes(individuos[0])
+valor = a * 50 + b * 100 + c * 200 + d * 500 + e * 1000
+print("el individuo restante cumple el valor:" + str(valor == montoARetirar))
 
 file.close()
