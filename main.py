@@ -49,7 +49,7 @@ def generar_poblacion_inicial(monto_a_retirar):
     cantidad_poblacion_inicial = combinaciones_posibles
 
     if combinaciones_posibles > 1000000:
-        cantidad_poblacion_inicial = 500000
+        cantidad_poblacion_inicial = 50000
 
     poblacion_inicial = []
     print("combinaciones posibles:", combinaciones_posibles)
@@ -67,10 +67,15 @@ def generar_poblacion_inicial(monto_a_retirar):
 def calcular_aptitud(ind, a_retirar):
     billetes = obtener_billetes(ind)
     valor = billetes[0] * 50 + billetes[1] * 100 + billetes[2] * 200 + billetes[3] * 500 + billetes[4] * 1000
-    if a_retirar == valor:
+    if a_retirar == valor:  # return (a_retirar // 50) - contar_billetes(ind) * (1- valorNormalizado(abs(a_retirar - valor) * -1)
         r = (a_retirar // 50) - contar_billetes(ind)
     else:
-        r = abs(a_retirar - valor) * -1
+        if contar_billetes(ind) > (a_retirar // 50) | (valor > 5 * a_retirar):
+            r = 0
+        else:
+            r = ((a_retirar // 50) - contar_billetes(ind)) * (1 - ((abs(a_retirar - valor)) / a_retirar)) * 0.9
+        # diferencia en valor * diferencia en billete  * ( 1 - diferencia en valor / valor a retirar)
+        # r = abs(a_retirar - valor) * -1
     return r
 
 
@@ -91,18 +96,6 @@ def calcular_aptitudes(inds, a_retirar):
         })
     return resultado
 
-
-def seleccion(inds, a_retirar):
-    inds = calcular_aptitudes(inds, a_retirar)
-    print("poblacion antes del filtrado:", len(inds))
-    individuosIterator = filter(es_apto, inds)  # removemos los que tienen aptitud -1
-    inds.sort(key=obtener_aptitud, reverse=True)  # ordenamos de mejor a peor
-    inds = list(individuosIterator)
-    print("poblacion post filtrado:", len(inds))
-
-    seleccionados = []
-    # TODO: como sabemos cuantos tomar de los mejores?
-    return inds
 
 
 def mejor_individuo(individuo1, individuo2, montoARetirar):
@@ -149,8 +142,18 @@ def cruzar(indA, indB, monto_a_retirar):
     billetesA = obtener_billetes(indA)
     billetesB = obtener_billetes(indB)
     # return (obtener_billetes(indB[0]), indB[1], indB[2], indA[3], indA[4])
+
+    resultado = []
+    for k in range(0, 5):
+        limite = random.randint(0, 1)
+        if limite == 1:
+            resultado.append(billetesA[k])
+        else:
+            resultado.append(billetesB[k])
+
     return {
-        'billetes': (billetesB[0], billetesB[1], billetesB[2], billetesA[3], billetesA[4])
+        # 'billetes': (billetesB[0], billetesB[1], billetesB[2], billetesA[3], billetesA[4])
+        'billetes': resultado
     }
 
 
@@ -159,7 +162,13 @@ def mutar(inds):
     individuo = inds[x]
     pos = random.randint(0, len(individuo) - 1)
     billetes = list(obtener_billetes(individuo))
-    billetes[pos] += 1  # ver de agregar -1 tmb
+
+    r = random.randint(0, 1)
+    if r == 0:
+        billetes[pos] += -1
+    else:
+        billetes[pos] += 1
+
     individuo_mutado = {
         'billetes': tuple(billetes),
     }
@@ -195,14 +204,22 @@ def es_apto(individuo):
     return obtener_aptitud(individuo) >= 0
 
 
+def obtener_todas_las_aptitudes(inds):
+    resultado = []
+    for a in range(len(inds)):
+        resultado.append(obtener_aptitud(inds[a]))
+    return resultado
+
+
 # MAIN
 
-montoARetirar = 7350
+montoARetirar = 27850
 individuos = generar_poblacion_inicial(montoARetirar)
 cantidad_de_vueltas = 10000
 i = 1
 
 file = open('vuelta_mejor_aptitud.txt', 'w')
+file_cromosoma = open('cromosomas.txt', 'w')
 
 while i < cantidad_de_vueltas:
     print("ejecutando Vuelta", i)
@@ -210,8 +227,16 @@ while i < cantidad_de_vueltas:
 
     print("poblacion antes del torneo", len(individuos))
     seleccionados = torneo(individuos, montoARetirar)
-    seleccionados.sort(key=obtener_aptitud, reverse=True)
-    file.write(str(i) + "," + str(obtener_aptitud(seleccionados[0])) + '\n')
+
+    ordenados = seleccionados.copy()
+    ordenados.sort(key=obtener_aptitud, reverse=True)
+
+    file.write(str(i) + "," + str(obtener_aptitud(ordenados[0])) + '\n')
+    file.flush()
+
+
+    file_cromosoma.write(str(i) + ":" + str(obtener_billetes(ordenados[0])) + '\n')
+    file_cromosoma.flush()
 
     individuosCruzados = cruzamiento(seleccionados, montoARetirar)
     individuosMutados = mutacion(individuosCruzados)
@@ -220,11 +245,11 @@ while i < cantidad_de_vueltas:
 
 print("fin de los ciclos, se ejecutaron " + str(i) + " vueltas.")
 
-
-#individuos.sort(key=obtener_aptitud, reverse=True)  # ordenamos de mejor a peor
-#print(individuos[0])
-#a, b, c, d, e = obtener_billetes(individuos[0])
-#valor = a * 50 + b * 100 + c * 200 + d * 500 + e * 1000
-#print("el individuo restante cumple el valor:" + str(valor == montoARetirar))
+# individuos.sort(key=obtener_aptitud, reverse=True)  # ordenamos de mejor a peor
+# print(individuos[0])
+# a, b, c, d, e = obtener_billetes(individuos[0])
+# valor = a * 50 + b * 100 + c * 200 + d * 500 + e * 1000
+# print("el individuo restante cumple el valor:" + str(valor == montoARetirar))
 
 file.close()
+file_cromosoma.close()
