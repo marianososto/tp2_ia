@@ -4,33 +4,22 @@ import mutacion as mut_pkg
 import individuo as ind_pkg
 import poblacion_inicial as pob_inic_pkg
 
-# import graph
-
-# A: Cantidad de billetes de 50 disponibles
-# B: Cantidad de billetes de 100 disponibles
-# C: Cantidad de billetes de 200 disponibles
-# D: Cantidad de billetes de 500 disponibles
-# E: Cantidad de billetes de 1000 disponibles
-
-
-A, B, C, D, E = 1000, 500, 250, 100, 50  # esto nos da en total $250K
-TOTAL_COMBINACIONES_POSIBLES = A * B * C * D * E
-PROBABILIDAD_MUTACION = 25  # 50
+PROBABILIDAD_MUTACION = 75  # 50
 
 # MAIN
-montoARetirar = 27850
+montoARetirar = 3650
 individuos = pob_inic_pkg.generar_poblacion_inicial(montoARetirar)
 cantidad_de_vueltas = 10000
 i = 1
 
 # Loggeamos vuelta por vuelta la mejor aptitud para verlo en un grafico en tiempo real.
-file = open('vuelta_mejor_aptitud.txt', 'w')
+file = open('corrida3/vuelta_mejor_aptitud.txt', 'w')
 
 # Loggeamos vuelta por vuelta el cromosoma con mejor aptitud.
-file_cromosoma = open('cromosomas.txt', 'w')
+file_cromosoma = open('corrida3/cromosomas.txt', 'w')
 
 # Logeamos el comportamiento de la poblacion vuelta por vuelta
-file_log = open('log_ejecucion.csv', 'w')
+file_log = open('corrida3/log_ejecucion.csv', 'w')
 file_log.write('Informacion de la ejecucion\n')
 
 while i < cantidad_de_vueltas:

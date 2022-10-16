@@ -21,7 +21,7 @@ ys = []
 
 def animate(i):
 
-    graph_data = open('vuelta_mejor_aptitud.txt', 'r').read()
+    graph_data = open('corrida3/vuelta_mejor_aptitud.txt', 'r').read()
     lines = graph_data.split('\n')
     xs = []
     ys = []

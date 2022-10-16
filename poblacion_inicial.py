@@ -20,10 +20,8 @@ def generar_poblacion_inicial(monto_a_retirar):
 
     # el 100 lo agregue para una poblacion mas variada
     combinaciones_posibles = todo_50 * todo_100 * todo_200 * todo_500 * todo_1000
-    cantidad_poblacion_inicial = combinaciones_posibles
 
-    if combinaciones_posibles > 1000000:
-        cantidad_poblacion_inicial = 5000
+    cantidad_poblacion_inicial = 5000
 
     poblacion_inicial = []
     print("combinaciones posibles:", combinaciones_posibles)
