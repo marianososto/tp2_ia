@@ -4,6 +4,7 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import statistics
+import pre_seleccion_mejores
 
 # import graph
 
@@ -95,7 +96,6 @@ def calcular_aptitudes(inds, a_retirar):
             'aptitud': apt
         })
     return resultado
-
 
 
 def mejor_individuo(individuo1, individuo2, montoARetirar):
@@ -225,15 +225,16 @@ while i < cantidad_de_vueltas:
     print("ejecutando Vuelta", i)
     # seleccionados = seleccion(individuos, montoARetirar)
 
-    print("poblacion antes del torneo", len(individuos))
-    seleccionados = torneo(individuos, montoARetirar)
+    print("poblacion antes de preseleccion", len(individuos))
+    # seleccionados = torneo(individuos, montoARetirar)
+    seleccionados = pre_seleccion_mejores.pre_seleccion_de_mejores(individuos, montoARetirar)
+    print("poblacion post preseleccion", len(individuos))
 
     ordenados = seleccionados.copy()
     ordenados.sort(key=obtener_aptitud, reverse=True)
 
     file.write(str(i) + "," + str(obtener_aptitud(ordenados[0])) + '\n')
     file.flush()
-
 
     file_cromosoma.write(str(i) + ":" + str(obtener_billetes(ordenados[0])) + '\n')
     file_cromosoma.flush()
