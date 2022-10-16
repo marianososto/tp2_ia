@@ -7,7 +7,7 @@ import poblacion_inicial as pob_inic_pkg
 PROBABILIDAD_MUTACION = 75  # 50
 
 # MAIN
-montoARetirar = 9400
+montoARetirar = 18150
 individuos = pob_inic_pkg.generar_poblacion_inicial(montoARetirar)
 cantidad_de_vueltas = 10000
 i = 1
