@@ -1,0 +1,4 @@
+Parametros de ejecucion
+Monto 9400
+Algoritmo de seleccion: preseleccion de mejores
+Probabilidad de mutacion 75%

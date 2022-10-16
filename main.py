@@ -7,19 +7,19 @@ import poblacion_inicial as pob_inic_pkg
 PROBABILIDAD_MUTACION = 75  # 50
 
 # MAIN
-montoARetirar = 3650
+montoARetirar = 9400
 individuos = pob_inic_pkg.generar_poblacion_inicial(montoARetirar)
 cantidad_de_vueltas = 10000
 i = 1
 
 # Loggeamos vuelta por vuelta la mejor aptitud para verlo en un grafico en tiempo real.
-file = open('corrida3/vuelta_mejor_aptitud.txt', 'w')
+file = open('vuelta_mejor_aptitud.csv', 'w')
 
 # Loggeamos vuelta por vuelta el cromosoma con mejor aptitud.
-file_cromosoma = open('corrida3/cromosomas.txt', 'w')
+file_cromosoma = open('cromosomas.csv', 'w')
 
 # Logeamos el comportamiento de la poblacion vuelta por vuelta
-file_log = open('corrida3/log_ejecucion.csv', 'w')
+file_log = open('log_ejecucion.csv', 'w')
 file_log.write('Informacion de la ejecucion\n')
 
 while i < cantidad_de_vueltas:
