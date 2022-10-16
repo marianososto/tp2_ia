@@ -6,23 +6,25 @@ def pre_seleccion_de_mejores(inds, monto_a_retirar):
     inds = calcular_aptitudes(inds, monto_a_retirar)
     aptitudes = obtener_todas_las_aptitudes(inds)
     aptitud_promedio = statistics.mean(aptitudes)
+    print("Promedio: ", aptitud_promedio)
     inds = calcular_aptitud_sobre_promedio(inds, aptitud_promedio)
     filtrados_mayor_a_1 = filter(aptitud_sobre_promedio_mayor_a_1, inds)
     filtrados_mayor_a_1 = list(filtrados_mayor_a_1)
 
     resultado = []
-    for k in range(len(filtrados_mayor_a_1) - 1):
+    for k in range(len(filtrados_mayor_a_1)):
         parte_entera = int(obtener_aptitud_sobre_promedio(filtrados_mayor_a_1[k]))
         for _ in range(parte_entera):
             resultado.append(filtrados_mayor_a_1[k])
 
     individuos_para_ruleta = []
-    for m in range(len(filtrados_mayor_a_1) - 1):
-        apt_prom = obtener_aptitud_sobre_promedio(filtrados_mayor_a_1[m])
+    for m in range(len(inds)):
+        apt_prom = obtener_aptitud_sobre_promedio(inds[m])
         individuos_para_ruleta.append({
-            'billetes': obtener_billetes(filtrados_mayor_a_1[m]),
+            'billetes': obtener_billetes(inds[m]),
             'aptitud': apt_prom - int(apt_prom)
         })
+
 
     resultado_ruleta = ruleta(individuos_para_ruleta, len(resultado))
 
@@ -33,14 +35,13 @@ def pre_seleccion_de_mejores(inds, monto_a_retirar):
 def ruleta(inds, cantidad_de_individuos_ya_agregados):
     aptitudes = obtener_todas_las_aptitudes(inds)
     aptitud_promedio = statistics.mean(aptitudes)
+    print("Promedio de Ruleta: ", aptitud_promedio)
     inds = calcular_aptitud_sobre_promedio(inds, aptitud_promedio)
     calcular_probabilidad_acumulada(inds)
 
     inds.sort(key=obtener_probabilidad_acumulada, reverse=False)
 
-
-    #cantidad_randoms = len(inds) - cantidad_de_individuos_ya_agregados  #genero la cantidad de randoms necesaria para conservar el tamaño de la poblacion ( NO FUNCIONA PQ LA POBLACION AUMENTA Y DA NEGATIVO ESTA RESTA)
-    cantidad_randoms = cantidad_de_individuos_ya_agregados # EJECUTO LA RULETA LAS MISMAS VECES QUE EL TAMAÑO DE LA POBLACION PRESELECCIONADA
+    cantidad_randoms = len(inds) - cantidad_de_individuos_ya_agregados
 
     resultado = []
     for _ in range(cantidad_randoms):
@@ -100,7 +101,7 @@ def calcular_aptitud_sobre_promedio(inds, promedio):
 
 def calcular_aptitudes(inds, a_retirar):
     resultado = []
-    for k in range(0, len(inds) - 1):
+    for k in range(len(inds)):
         apt = calcular_aptitud(inds[k], a_retirar)
         resultado.append({
             'billetes': obtener_billetes(inds[k]),
@@ -115,7 +116,7 @@ def calcular_aptitud(ind, a_retirar):
     if a_retirar == valor:  # return (a_retirar // 50) - contar_billetes(ind) * (1- valorNormalizado(abs(a_retirar - valor) * -1)
         r = (a_retirar // 50) - contar_billetes(ind)
     else:
-        if contar_billetes(ind) > (a_retirar // 50) | (valor > 5 * a_retirar):
+        if (contar_billetes(ind) > (a_retirar // 50)) | (valor > 2 * a_retirar):
             r = 0
         else:
             r = ((a_retirar // 50) - contar_billetes(ind)) * (1 - ((abs(a_retirar - valor)) / a_retirar)) * 0.9

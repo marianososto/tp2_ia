@@ -17,7 +17,7 @@ import pre_seleccion_mejores
 
 A, B, C, D, E = 1000, 500, 250, 100, 50  # esto nos da en total $250K
 TOTAL_COMBINACIONES_POSIBLES = A * B * C * D * E
-PROBABILIDAD_MUTACION = 50
+PROBABILIDAD_MUTACION = 75  # 50
 
 
 # Xa: cantidad de billetes de 50 utilizados; Xa <= A
@@ -29,28 +29,28 @@ PROBABILIDAD_MUTACION = 50
 # K: monto a retirar del cajero.
 
 def generar_combinacion(todo_50, todo_100, todo_200, todo_500, todo_1000):
-    Xa = random.randint(0, todo_50)
-    Xb = random.randint(0, todo_100)
-    Xc = random.randint(0, todo_200)
-    Xd = random.randint(0, todo_500)
-    Xe = random.randint(0, todo_1000)
+    Xa = random.randint(0, int(todo_50 // 2) + 1)
+    Xb = random.randint(0, int(todo_100 // 2) + 1)
+    Xc = random.randint(0, int(todo_200 // 2) + 1)
+    Xd = random.randint(0, int(todo_500 // 2) + 1)
+    Xe = random.randint(0, int(todo_1000 // 2) + 1)
     return Xa, Xb, Xc, Xd, Xe
 
 
 def generar_poblacion_inicial(monto_a_retirar):
     # cantidad_poblacion_inicial = int(TOTAL_COMBINACIONES_POSIBLES * 0.001)
-    todo_50 = math.ceil(monto_a_retirar / 50)
-    todo_100 = math.ceil(monto_a_retirar / 100)
-    todo_200 = math.ceil(monto_a_retirar / 200)
-    todo_500 = math.ceil(monto_a_retirar / 500)
-    todo_1000 = math.ceil(monto_a_retirar / 1000)
+    todo_50 = math.ceil(monto_a_retirar // 50)
+    todo_100 = math.ceil(monto_a_retirar // 100)
+    todo_200 = math.ceil(monto_a_retirar // 200)
+    todo_500 = math.ceil(monto_a_retirar // 500)
+    todo_1000 = math.ceil(monto_a_retirar // 1000)
 
     # el 100 lo agregue para una poblacion mas variada
     combinaciones_posibles = todo_50 * todo_100 * todo_200 * todo_500 * todo_1000
     cantidad_poblacion_inicial = combinaciones_posibles
 
     if combinaciones_posibles > 1000000:
-        cantidad_poblacion_inicial = 1000
+        cantidad_poblacion_inicial = 5000
 
     poblacion_inicial = []
     print("combinaciones posibles:", combinaciones_posibles)
@@ -71,7 +71,7 @@ def calcular_aptitud(ind, a_retirar):
     if a_retirar == valor:  # return (a_retirar // 50) - contar_billetes(ind) * (1- valorNormalizado(abs(a_retirar - valor) * -1)
         r = (a_retirar // 50) - contar_billetes(ind)
     else:
-        if contar_billetes(ind) > (a_retirar // 50) | (valor > 5 * a_retirar):
+        if contar_billetes(ind) > (a_retirar // 50) | (valor > 2 * a_retirar):
             r = 0
         else:
             r = ((a_retirar // 50) - contar_billetes(ind)) * (1 - ((abs(a_retirar - valor)) / a_retirar)) * 0.9
@@ -89,7 +89,7 @@ def contar_billetes(ind):
 
 def calcular_aptitudes(inds, a_retirar):
     resultado = []
-    for k in range(0, len(inds) - 1):
+    for k in range(len(inds)):
         apt = calcular_aptitud(inds[k], a_retirar)
         resultado.append({
             'billetes': obtener_billetes(inds[k]),
@@ -164,7 +164,7 @@ def mutar(inds):
     billetes = list(obtener_billetes(individuo))
 
     r = random.randint(0, 1)
-    if r == 0:
+    if (r == 0) & (billetes[pos] > 0):
         billetes[pos] += -1
     else:
         billetes[pos] += 1
@@ -211,6 +211,13 @@ def obtener_todas_las_aptitudes(inds):
     return resultado
 
 
+def billetes(inds):
+    resultado = []
+    for n in inds:
+        resultado.append(obtener_billetes(n))
+    return resultado
+
+
 # MAIN
 
 montoARetirar = 27850
@@ -237,6 +244,13 @@ while i < cantidad_de_vueltas:
 
     file_cromosoma.write(str(i) + ":" + str(obtener_billetes(ordenados[0])) + '\n')
     file_cromosoma.flush()
+
+    billetes_inds = billetes(ordenados)
+    ocurrencias_primero = billetes_inds.count(billetes_inds[0])
+    print("Ocurrencias 1er elemento: ", ocurrencias_primero, " tamaño total: ", len(ordenados))
+    if ocurrencias_primero == len(ordenados):
+        print("Toda poblacion formada por el mejor individuo. Fin.")
+        break
 
     print("poblacion antes de cruzamiento", len(individuos))
     individuosCruzados = cruzamiento(seleccionados, montoARetirar)
