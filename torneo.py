@@ -1,4 +1,5 @@
-
+import individuo as ind_pkg
+import aptitud as apt_pkg
 
 
 def torneo(inds, monto_a_retirar):
@@ -13,18 +14,17 @@ def torneo(inds, monto_a_retirar):
     return resultado
 
 
-
 def mejor_individuo(individuo1, individuo2, montoARetirar):
-    apt1 = calcular_aptitud(individuo1, montoARetirar)
-    apt2 = calcular_aptitud(individuo2, montoARetirar)
+    apt1 = apt_pkg.calcular_aptitud(individuo1, montoARetirar)
+    apt2 = apt_pkg.calcular_aptitud(individuo2, montoARetirar)
     if apt1 > apt2:
         individuo = {
-            'billetes': obtener_billetes(individuo1),
+            'billetes': ind_pkg.obtener_billetes(individuo1),
             'aptitud': apt1
         }
     else:
         individuo = {
-            'billetes': obtener_billetes(individuo2),
+            'billetes': ind_pkg.obtener_billetes(individuo2),
             'aptitud': apt2
         }
     return individuo

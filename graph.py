@@ -1,3 +1,10 @@
+"""
+Levantar este codigo en un terminal utlizando python. Por ejemplo:
+python3.8 graph.py
+
+Esto creara una ventana con un grafico para ver en tiempo real el comportamiento de la mejor aptitud a lo largo de las vueltas.
+"""
+
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib import style

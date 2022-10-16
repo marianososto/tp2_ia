@@ -1,3 +1,4 @@
 Parametros de ejecucion
 Monto 27850
+Algoritmo de seleccion: preseleccion de mejores
 Probabilidad de mutacion 75%
