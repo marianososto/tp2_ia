@@ -88,10 +88,10 @@ def contar_billetes(ind):
 
 def calcular_aptitudes(inds, a_retirar):
     resultado = []
-    for i in range(0, len(inds) - 1):
-        apt = calcular_aptitud(inds[i], a_retirar)
+    for k in range(0, len(inds) - 1):
+        apt = calcular_aptitud(inds[k], a_retirar)
         resultado.append({
-            'billetes': obtener_billetes(inds[i]),
+            'billetes': obtener_billetes(inds[k]),
             'aptitud': apt
         })
     return resultado
