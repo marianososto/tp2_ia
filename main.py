@@ -63,8 +63,6 @@ def generar_poblacion_inicial(monto_a_retirar):
     return poblacion_inicial
 
 
-# print(generar_poblacion_inicial())
-
 def calcular_aptitud(ind, a_retirar):
     billetes = obtener_billetes(ind)
     valor = billetes[0] * 50 + billetes[1] * 100 + billetes[2] * 200 + billetes[3] * 500 + billetes[4] * 1000
@@ -136,12 +134,9 @@ def cruzamiento(inds, monto_a_retirar):
     return resultado
 
 
-# cruza simple. Los primeros 3 los tomamos de B, y los ultimos 2 de A.
-# cruza simple. Los primeros 3 los tomamos de B, y los ultimos 2 de A.
 def cruzar(indA, indB, monto_a_retirar):
     billetesA = obtener_billetes(indA)
     billetesB = obtener_billetes(indB)
-    # return (obtener_billetes(indB[0]), indB[1], indB[2], indA[3], indA[4])
 
     resultado = []
     for k in range(0, 5):
@@ -152,7 +147,6 @@ def cruzar(indA, indB, monto_a_retirar):
             resultado.append(billetesB[k])
 
     return {
-        # 'billetes': (billetesB[0], billetesB[1], billetesB[2], billetesA[3], billetesA[4])
         'billetes': resultado
     }
 
@@ -178,17 +172,16 @@ def mutar(inds):
 
 # se activa siempre y se ejecuta dependiendo de una probabilidad
 def ejecuta_mutacion():
-    x = random.randint(0, 100);
+    x = random.randint(0, 100)
     return x <= PROBABILIDAD_MUTACION
 
 
-def mutacion(individuos):
-    mutados = []
+def mutacion(inds):
     if ejecuta_mutacion():
         print("Se ejecutó mutación.")
-        mutados = mutar(individuos)
+        mutados = mutar(inds)
     else:
-        mutados = individuos
+        mutados = inds
     return mutados
 
 
@@ -219,20 +212,25 @@ def billetes(inds):
 
 
 # MAIN
-
 montoARetirar = 27850
 individuos = generar_poblacion_inicial(montoARetirar)
 cantidad_de_vueltas = 10000
 i = 1
 
-file = open('vuelta_mejor_aptitud.txt', 'w')
+# Loggeamos vuelta por vuelta la mejor aptitud para verlo en un grafico en tiempo real.
+file = open('vuelta_mejor_aptitud.txt','w')
+
+# Loggeamos vuelta por vuelta el cromosoma con mejor aptitud.
 file_cromosoma = open('cromosomas.txt', 'w')
 
-while i < cantidad_de_vueltas:
-    print("ejecutando Vuelta", i)
-    # seleccionados = seleccion(individuos, montoARetirar)
+# Logeamos el comportamiento de la poblacion vuelta por vuelta
+file_log = open('ejecucion_1.log', 'w')
+file_log.write('Informacion de la ejecucion\n')
 
-    print("poblacion antes de preseleccion", len(individuos))
+while i < cantidad_de_vueltas:
+    print("Ejecutando Vuelta", i, file=file_log)
+
+    print("poblacion antes de preseleccion", len(individuos), file=file_log)
     # seleccionados = torneo(individuos, montoARetirar)
     seleccionados = pre_seleccion_mejores.pre_seleccion_de_mejores(individuos, montoARetirar)
 
@@ -247,25 +245,23 @@ while i < cantidad_de_vueltas:
 
     billetes_inds = billetes(ordenados)
     ocurrencias_primero = billetes_inds.count(billetes_inds[0])
-    print("Ocurrencias 1er elemento: ", ocurrencias_primero, " tamaño total: ", len(ordenados))
+    print("Ocurrencias elemento mas apto: ", ocurrencias_primero, " tamaño total: ", len(ordenados), file=file_log)
     if ocurrencias_primero == len(ordenados):
-        print("Toda poblacion formada por el mejor individuo. Fin.")
+        print("Toda poblacion formada por el mejor individuo. Fin.", file=file_log)
         break
 
-    print("poblacion antes de cruzamiento", len(individuos))
+    print("poblacion antes de cruzamiento", len(individuos), file=file_log)
     individuosCruzados = cruzamiento(seleccionados, montoARetirar)
-    print("poblacion antes de mutacion", len(individuos))
+    print("poblacion antes de mutacion", len(individuos), file=file_log)
     individuosMutados = mutacion(individuosCruzados)
     individuos = individuosMutados
     i += 1
 
-print("fin de los ciclos, se ejecutaron " + str(i) + " vueltas.")
+print("fin de los ciclos, se ejecutaron " + str(i) + " vueltas.", file=file_log)
 
-# individuos.sort(key=obtener_aptitud, reverse=True)  # ordenamos de mejor a peor
-# print(individuos[0])
-# a, b, c, d, e = obtener_billetes(individuos[0])
-# valor = a * 50 + b * 100 + c * 200 + d * 500 + e * 1000
-# print("el individuo restante cumple el valor:" + str(valor == montoARetirar))
-
+# cierro file descriptors.
 file.close()
 file_cromosoma.close()
+
+file_log.flush()
+file_log.close()
