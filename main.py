@@ -17,7 +17,7 @@ import pre_seleccion_mejores
 
 A, B, C, D, E = 1000, 500, 250, 100, 50  # esto nos da en total $250K
 TOTAL_COMBINACIONES_POSIBLES = A * B * C * D * E
-PROBABILIDAD_MUTACION = 75  # 50
+PROBABILIDAD_MUTACION = 25  # 50
 
 
 # Xa: cantidad de billetes de 50 utilizados; Xa <= A
