@@ -1,0 +1,3 @@
+Parametros de ejecucion
+Monto 27850
+Probabilidad de mutacion 25%
