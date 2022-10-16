@@ -38,13 +38,14 @@ def ruleta(inds, cantidad_de_individuos_ya_agregados):
 
     inds.sort(key=obtener_probabilidad_acumulada, reverse=False)
 
-    cantidad_randoms = len(
-        inds) - cantidad_de_individuos_ya_agregados  # genero la cantidad de randoms necesaria para conservar el tamaño de la poblacion
+
+    #cantidad_randoms = len(inds) - cantidad_de_individuos_ya_agregados  #genero la cantidad de randoms necesaria para conservar el tamaño de la poblacion ( NO FUNCIONA PQ LA POBLACION AUMENTA Y DA NEGATIVO ESTA RESTA)
+    cantidad_randoms = cantidad_de_individuos_ya_agregados # EJECUTO LA RULETA LAS MISMAS VECES QUE EL TAMAÑO DE LA POBLACION PRESELECCIONADA
 
     resultado = []
     for _ in range(cantidad_randoms):
         rnd = random.uniform(0, 100)
-        for j in range(inds):
+        for j in range(len(inds)):
             if rnd <= obtener_probabilidad_acumulada(inds[j]):
                 resultado.append(inds[j])
                 break

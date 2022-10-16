@@ -50,7 +50,7 @@ def generar_poblacion_inicial(monto_a_retirar):
     cantidad_poblacion_inicial = combinaciones_posibles
 
     if combinaciones_posibles > 1000000:
-        cantidad_poblacion_inicial = 50000
+        cantidad_poblacion_inicial = 1000
 
     poblacion_inicial = []
     print("combinaciones posibles:", combinaciones_posibles)
@@ -185,7 +185,7 @@ def ejecuta_mutacion():
 def mutacion(individuos):
     mutados = []
     if ejecuta_mutacion():
-        print("Muto")
+        print("Se ejecutó mutación.")
         mutados = mutar(individuos)
     else:
         mutados = individuos
@@ -228,7 +228,6 @@ while i < cantidad_de_vueltas:
     print("poblacion antes de preseleccion", len(individuos))
     # seleccionados = torneo(individuos, montoARetirar)
     seleccionados = pre_seleccion_mejores.pre_seleccion_de_mejores(individuos, montoARetirar)
-    print("poblacion post preseleccion", len(individuos))
 
     ordenados = seleccionados.copy()
     ordenados.sort(key=obtener_aptitud, reverse=True)
@@ -239,7 +238,9 @@ while i < cantidad_de_vueltas:
     file_cromosoma.write(str(i) + ":" + str(obtener_billetes(ordenados[0])) + '\n')
     file_cromosoma.flush()
 
+    print("poblacion antes de cruzamiento", len(individuos))
     individuosCruzados = cruzamiento(seleccionados, montoARetirar)
+    print("poblacion antes de mutacion", len(individuos))
     individuosMutados = mutacion(individuosCruzados)
     individuos = individuosMutados
     i += 1
