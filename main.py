@@ -9,7 +9,7 @@ import aptitud as apt_pkg
 PROBABILIDAD_MUTACION = 75
 
 # MAIN
-montoARetirar = 3650
+montoARetirar = 9400
 individuos = pob_inic_pkg.generar_poblacion_inicial(montoARetirar)
 cantidad_de_vueltas = 10000
 i = 1
