@@ -1,13 +1,15 @@
 import pre_seleccion_mejores
+import torneo as torneo_pkg
 import cruzamiento as cruz_pkg
 import mutacion as mut_pkg
 import individuo as ind_pkg
 import poblacion_inicial as pob_inic_pkg
+import aptitud as apt_pkg
 
-PROBABILIDAD_MUTACION = 75  # 50
+PROBABILIDAD_MUTACION = 75
 
 # MAIN
-montoARetirar = 18150
+montoARetirar = 3650
 individuos = pob_inic_pkg.generar_poblacion_inicial(montoARetirar)
 cantidad_de_vueltas = 10000
 i = 1
@@ -26,8 +28,8 @@ while i < cantidad_de_vueltas:
     print("Ejecutando Vuelta", i, file=file_log)
 
     print("Poblacion antes de seleccion", len(individuos), file=file_log)
-    # seleccionados = torneo(individuos, montoARetirar)
-    seleccionados = pre_seleccion_mejores.pre_seleccion_de_mejores(individuos, montoARetirar)
+    seleccionados = torneo_pkg.torneo(individuos, montoARetirar)
+    # seleccionados = pre_seleccion_mejores.pre_seleccion_de_mejores(individuos, montoARetirar)
 
     ordenados = seleccionados.copy()
     ordenados.sort(key=ind_pkg.obtener_aptitud, reverse=True)
@@ -41,8 +43,12 @@ while i < cantidad_de_vueltas:
     billetes_inds = ind_pkg.billetes(ordenados)
     ocurrencias_primero = billetes_inds.count(billetes_inds[0])
     print("Ocurrencias elemento mas apto: ", ocurrencias_primero, " tamaño total: ", len(ordenados), file=file_log)
-    if ocurrencias_primero == len(ordenados):
-        print("Toda poblacion formada por el mejor individuo. Fin.", file=file_log)
+    apt_promedio = apt_pkg.calcular_aptitud_promedio(ordenados)
+    print("Aptitud promedio:", apt_promedio)
+    print("Aptitud mejor individuo:", ind_pkg.obtener_aptitud(ordenados[0]))
+    # Condicion de corte: La 2da clausula del OR es unicamente para cuando utilizamos torneo
+    if (ocurrencias_primero == len(ordenados)) | (ind_pkg.obtener_aptitud(ordenados[0]) == apt_promedio):
+        print("Toda poblacion formada por el mejor individuo o la mejor aptitud es igual al promedio. Fin.", file=file_log)
         break
 
     print("Poblacion antes de cruzamiento", len(individuos), file=file_log)

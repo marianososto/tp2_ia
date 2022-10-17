@@ -1,3 +1,6 @@
+import statistics
+
+
 def obtener_aptitud(individuo):
     return individuo.get('aptitud')
 

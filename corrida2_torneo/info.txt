@@ -1,0 +1,4 @@
+Parametros de ejecucion
+Monto 27850
+Algoritmo de seleccion: torneo
+Probabilidad de mutacion 25%

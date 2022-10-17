@@ -1,3 +1,5 @@
+import statistics
+
 import individuo
 
 
@@ -49,3 +51,8 @@ def calcular_aptitud_sobre_promedio(inds, promedio):
             'aptitud_sobre_promedio': apt / promedio
         })
     return resultado
+
+
+def calcular_aptitud_promedio(individuos):
+    apts = obtener_todas_las_aptitudes(individuos)
+    return statistics.mean(apts)
